@@ -2,6 +2,9 @@
 
 namespace App;
 
+use App\Seller;
+use App\Category;
+use App\Transaction;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
@@ -20,5 +23,19 @@ class Product extends Model
 
     public function isAvailable() {
     	return $this->status == Product::PRODUCT_DISPONIBLE;
+    }
+
+    // Muchos productos pertenece a muchas categorias
+    public function categories() {
+        return $this->belongsToMany(Category::class);
+    }
+
+    // Un producto pertenece a un vendedor | Productos pertenece a un vendedor, porque es quien lleva la llave foranea
+    public function seller() {
+        return $this->belongsTo(Seller::class);
+    }
+    // Un producto posee muchas transacciones, puesto que transacción es quien lleva la llave foranea.
+    public function transactions() {
+        return $this->hasMany(Transaction::class);
     }
 }
