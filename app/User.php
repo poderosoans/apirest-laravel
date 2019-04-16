@@ -52,11 +52,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    protected function isVerified() {
+    public function isVerified() {
         return $this->verified == User::USER_VERIFIED;
     }
 
-    protected function isAdmin() {
+    public function isAdmin() {
         return $this->admin == User::USER_ADMIN;
     }
     // Static: Porque no vamos a requerir de una instancia de usuario para generar el token
