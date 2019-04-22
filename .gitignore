@@ -11,3 +11,14 @@ npm-debug.log
 yarn-error.log
 APIRestful.sublime-project
 APIRestful.sublime-workspace
+### Vagrant ###
+# General
+.vagrant/
+
+# Log files (if you are creating logs in debug mode, uncomment this)
+# *.logs
+
+### Vagrant Patch ###
+*.box
+
+# End of https://www.gitignore.io/api/vagrant
