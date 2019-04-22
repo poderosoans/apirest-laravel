@@ -16,6 +16,10 @@ class Category extends Model
     	'description'
     ];
 
+    protected $hidden = [
+        'pivot'
+    ];
+
     // Muchas categoría pertenece a muchos productos
     public function products() {
     	return $this->belongsToMany(Product::class);
