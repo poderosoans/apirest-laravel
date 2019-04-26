@@ -12,7 +12,7 @@ class Seller extends User
 
 	protected static function boot() {
 		parent::boot();
-		
+		// Consulta que podemos ejecutar de manera global en un modelo cada vez que se realicen consultas sobre el mismo
 		static::addGlobalScope(new SellerScope);
 	}
 
