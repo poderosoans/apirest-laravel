@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 trait ApiResponser {
 
@@ -23,6 +24,7 @@ trait ApiResponser {
 
 		$collection = $this->filterData($collection,$transformer);
 		$collection = $this->sortData($collection,$transformer);
+		$collection = $this->paginate($collection);
 
 		$collection = $this->transformData($collection, $transformer);
 
@@ -58,13 +60,35 @@ trait ApiResponser {
 	protected function filterData(Collection $collection, $transformer) {
 		foreach (request()->query() as $query => $value) {
 			$attribute = $transformer::originalAttribute($query);
-			
+
 			if(isset($attribute, $value)) {
 				$collection = $collection->where($attribute, $value);
+				/*
+				// Like search
+				$collection = $collection->filter(function($item) use ($attribute, $value){
+                    return false !== stristr($item[$attribute], $value);
+                });
+                */
+
 			}
 		}
 
 		return $collection;
+	}
+
+	protected function paginate(Collection $collection) {
+		$page = LengthAwarePaginator::resolveCurrentPage();
+		$perPage = 15;
+
+		$results = $collection->slice(($page - 1) * $perPage, $perPage)->values();
+
+		$paginated = new LengthAwarePaginator($results, $collection->count(), $perPage, $page, [
+			'path' => LengthAwarePaginator::resolveCurrentPath(),
+		]);
+
+		$paginated->appends(request()->all());
+		
+		return $paginated;
 	}
 
 }
