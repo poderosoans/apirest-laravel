@@ -6,6 +6,7 @@ use Exception;
 use App\Traits\ApiResponser;
 use Illuminate\Database\QueryException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Session\TokenMismatchException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -93,6 +94,10 @@ class Handler extends ExceptionHandler
 
         }
 
+        if ($exception instanceof TokenMismatchException) {
+            return redirect()->back()->withInput($request->input());
+        }
+
         if(config('app.debug')) {
             return $this->errorResponse('Error inesperado, inténtelo más tarde', 500);
         }
@@ -111,14 +116,28 @@ class Handler extends ExceptionHandler
     protected function convertValidationExceptionToResponse(ValidationException $e, $request)
     {
         $errors = $e->validator->errors()->getMessages();
+
+        if($this->isFrontend($request)) {
+            return $request->ajax() ? response()->json($errors, 422) : redirect()
+            ->back()
+            ->withInput($request->input())
+            ->withErrors($errors);
+        }
         
         return $this->errorResponse($errors, 422);
     }
 
     protected function unauthenticated($request, AuthenticationException $exception)
     {
+        if($this->isFrontend($request)) {
+            return redirect()->guest('login');
+        }
+
         return $this->errorResponse('No autenticado', 401);
     }
 
+    private function isFrontend($request) {
+        return $request->acceptsHtml() && collect($request->route()->middleware())->contains('web');
+    }
 
 }
