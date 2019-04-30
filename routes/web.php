@@ -22,5 +22,5 @@ Route::post('login', 'Auth\LoginController@login');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
 
-
+Route::get('/home/my-tokens', 'HomeController@getTokens')->name('personal-tokens');
 Route::get('/home', 'HomeController@index')->name('home');
