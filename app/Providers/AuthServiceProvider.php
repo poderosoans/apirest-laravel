@@ -42,6 +42,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        Gate::define('admin-action', function($user) {
+            return $user->isAdmin();
+        });
+
         Passport::routes(null, ['prefix' => 'api/oauth']);
         Passport::tokensExpireIn(Carbon::now()->addMinutes(30));
         Passport::refreshTokensExpireIn(Carbon::now()->addDays(30));
